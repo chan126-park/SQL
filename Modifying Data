@@ -1,0 +1,60 @@
+-- INSERT 
+--  RETURNING : 반환 해서 확인 하고 싶은 값  EX) RETURNING *, RETURNING id
+
+INSERT INTO links (url, name)
+VALUES('http://www.postgresql.org','PostgreSQL') 
+RETURNING *;
+
+----- Inserting multiple rows example
+    INSERT INTO 
+    links (url, name)
+VALUES
+    ('https://www.google.com','Google'),
+    ('https://www.yahoo.com','Yahoo'),
+    ('https://www.bing.com','Bing');
+    
+-- UPDATE 예시
+UPDATE courses
+SET published_date = '2020-07-01'
+WHERE course_id = 2
+RETURNING *;
+
+--- UPDATE join with practical examples 
+UPDATE t1
+SET t1.c1 = new_value
+FROM t2
+WHERE t1.c2 = t2.c2;
+
+-- DELETE 예시
+DELETE FROM links
+WHERE id = 7
+RETURNING *;
+
+
+-- UPSERT 
+INSERT INTO table_name(column_list) 
+VALUES(value_list)
+ON CONFLICT target action; target action;
+/*target : (column_name) 
+            ON CONSTRAINT constraint_name
+            WHERE predicate */
+/* action :  DO UPDATE SET column_1 = value_1, .. WHERE condition
+        
+-- upsert 예제 
+INSERT INTO customers (NAME, email)
+VALUES('Microsoft','hotline@microsoft.com') 
+ON CONFLICT ON CONSTRAINT customers_name_key 
+DO NOTHING;
+-- 위에 예제와 같음 
+INSERT INTO customers (name, email)
+VALUES('Microsoft','hotline@microsoft.com') 
+ON CONFLICT (name) 
+DO NOTHING;
+
+
+-- 새로 입력된 값 EXCLUDED 로 표시 
+INSERT INTO customers (name, email)
+VALUES('Microsoft','hotline@microsoft.com') 
+ON CONFLICT (name) 
+DO 
+   UPDATE SET email = EXCLUDED.email || ';' || customers.email;
