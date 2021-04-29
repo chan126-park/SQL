@@ -1,0 +1,32 @@
+-- || 연결 연산자 
+SELECT 
+   first_name || ' ' || last_name,
+   email
+FROM 
+   customer;
+   
+-- Column aliases
+SELECT column_name AS alias_name
+FROM table_name;
+SELECT 
+   first_name, 
+   last_name AS surname
+FROM customer;
+
+-- order by : ASC 오름차순 기본 설정 DESC 내림차순
+SELECT
+	first_name,
+	last_name
+FROM
+	customer
+ORDER BY
+	first_name ASC,
+	last_name DESC;
+  
+ -- NULLS FIRST = ASC, NULLS LAST = DESC (이미지 참고)
+ 
+-- SELECT DISTINCT (이미지 참고 ) 
+SELECT
+   DISTINCT column1, column2
+FROM
+   table_name;
