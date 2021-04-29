@@ -1,0 +1,230 @@
+/*  << data types >> 
+Boolean (bool) : true, false, null
+-- insert data into a Boolean column, PostgresSQL converts it to a Boolean value
+1, yes, y, t, true -> true 
+0, no, false,f  -> false 
+
+Chracter : CHAR(n), VARCHAR(n), TEXT
+CHAR(n) : fixed length character, 길이보다 짧은 문자열 삽입 시 공백 채워짐
+VARCHAR(n) : variable-length chracter, 공백을 채우지 않음
+TEXT : variable-length character string, unlimited length
+
+Numeric : Integer, Floating-point number
+--Integer 
+SMALLINT (Small integer) 2-byte signed integer, range -32,768 to 32,767
+INT (Integer) 4-byte range  -2,147,483,648 to 2,147,483,647
+Serial integer와 유사하지만 PostgreSQL 에서 자동으로 생성
+--Floating-point number
+float(n) n to max of 8 bytes
+real or float8 4-byte
+numeric numeric(p,s) 소수점 뒤에 s가 있는 p 자리 실수 
+
+Temporal data types
+DATE, TIEM, TIMESTAMP - date와 time value, TIMESTAMPTZ - timezone-aware timestamp data type, INTERVAL - periods of time 
+
+Arrays
+array of strings, integer
+
+Json
+data type - JSON, JSONB
+최신 웹 및 모바일 앱에서 데이터를 교환하는데 사용되는 일반적인 텍스트 데이터 형식 
+*/
+
+/*  << PostgreSQL CREATE TABLE >> 
+
+
+CREATE TABLE [IF NOT EXISTS] table_name (
+   column1 datatype(length) column_contraint,
+   column2 datatype(length) column_contraint,
+   column3 datatype(length) column_contraint,
+   table_constraints
+);
+
+-- IF NOT EXISTS : 테이블이 존재하면 notice를 주며, skip 한다 
+-- Constraints : 
+NOT NULL, 
+UNIQUE - 동일한 테이블 행 내에서 독자적인 값, 
+PRIMARY KEY - 테이블은 한개만 가질 수 있다, 
+CHECK - check constraints ensures the data must satisfy a boolean expression, 
+FOREIGN KEY - 열의 값이나 테이블의 열 그룹이 다른 테이블의 열 또는 열 그룹에 있는지 확인
+
+---- Create table statement 
+CREATE TABLE new_table_name
+AS query;
+
+-- Create table statement example 
+CREATE TABLE action_film AS
+SELECT
+    film_id,
+    title,
+    release_year,
+    length,
+    rating
+FROM
+    film
+INNER JOIN film_category USING (film_id)
+WHERE
+    category_id = 1;
+
+SELECT * FROM action_film
+ORDER BY title;
+
+
+--- Using PostgreSQL SERIAL To Create Auto-increment Column
+
+
+
+
+--- PostgreSQL Copy Table: A Step-by-Step Guide with Practical Examples
+CREATE TABLE new_table AS 
+TABLE existing_table;
+
+-- PostgreSQL Copy Table: A Step-by-Step Guide with Practical Examples example 
+CREATE TABLE contacts(
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR NOT NULL,
+    last_name VARCHAR NOT NULL,
+    email VARCHAR NOT NULL UNIQUE
+);
+
+INSERT INTO contacts(first_name, last_name, email) 
+VALUES('John','Doe','john.doe@postgresqltutorial.com'),
+      ('David','William','david.william@postgresqltutorial.com');
+      
+CREATE TABLE contact_backup 
+AS TABLE contacts;
+
+
+--- PostgreSQL Temporary Table
+--sseion 이나 transaction이 끝나면 사라짐 
+
+CREATE TEMPORARY TABLE temp_table_name(
+   column_list
+);
+-- temporary table name과 permanant table name이 같을 수 있다
+-- 하지만 temporary table을 제거하기 전까지 permanant table에 접근 할 수 없음 
+
+
+---  PostgreSQL DROP TABLE statement
+DROP TABLE [IF EXISTS] 
+   table_name_1,
+   table_name_2,
+   ...
+[CASCADE | RESTRICT];
+
+-- drop multiple tables 
+CREATE TABLE tvshows(
+	tvshow_id INT GENERATED ALWAYS AS IDENTITY,
+	title VARCHAR,
+	release_year SMALLINT,
+	PRIMARY KEY(tvshow_id)
+);
+
+CREATE TABLE animes(
+	anime_id INT GENERATED ALWAYS AS IDENTITY,
+	title VARCHAR,
+	release_year SMALLINT,
+	PRIMARY KEY(anime_id)
+);
+
+DROP TABLE tvshows, animes;
+
+-- drop a table that has dependent objects 
+CREATE TABLE authors (
+	author_id INT PRIMARY KEY,
+	firstname VARCHAR (50),
+	lastname VARCHAR (50)
+);
+
+CREATE TABLE pages (
+	page_id serial PRIMARY KEY,
+	title VARCHAR (255) NOT NULL,
+	contents TEXT,
+	author_id INT NOT NULL,
+	FOREIGN KEY (author_id) 
+          REFERENCES authors (author_id)
+);
+
+DROP TABLE authors CASCADE;
+-- CASCADE로 인해 pages 테이블도 삭제 
+
+
+--- PostgreSQL RENAME COLUMN: Renaming a column
+ALTER TABLE table_name 
+RENAME COLUMN column_name TO new_column_name;
+
+--example 
+ALTER TABLE customers 
+RENAME COLUMN name TO customer_name;
+
+
+-- Change Column Type: Step-by-Step Examples
+ALTER TABLE table_name
+ALTER COLUMN column_name [SET DATA] TYPE new_data_type;
+
+ALTER TABLE assets 
+ALTER COLUMN name TYPE VARCHAR;
+
+--- DROP COLUMN: Remove One or More Columns of a Table
+ALTER TABLE table_name 
+DROP COLUMN column_name;
+
+ALTER TABLE books 
+DROP COLUMN category_id;
+
+---  Add One Or More Columns To a Table
+ALTER TABLE table_name
+ADD COLUMN new_column_name data_type constraint;
+
+--- PostgreSQL ADD COLUMN statement
+ALTER TABLE table_name
+ADD COLUMN new_column_name data_type constraint;
+
+-- example 
+ALTER TABLE customers
+ADD COLUMN fax VARCHAR,
+ADD COLUMN email VARCHAR;
+
+ --- PostgreSQL rename table statement
+ ALTER TABLE table_name
+RENAME TO new_table_name;
+
+--example
+ALTER TABLE supplier_groups RENAME TO groups;
+
+
+--- ALTER TABLE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
