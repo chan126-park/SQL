@@ -1,0 +1,155 @@
+--------primary key constraint is the combination of a not-null constraint and a UNIQUE constraint.
+--------A table can have one and only one primary key.
+
+-- example 
+CREATE TABLE po_headers (
+	po_no INTEGER PRIMARY KEY,
+	vendor_no INTEGER,
+	description TEXT,
+	shipping_address TEXT
+);
+
+-- example : alter primary key 
+CREATE TABLE products (
+	product_no INTEGER,
+	description TEXT,
+	product_cost NUMERIC
+);
+
+ALTER TABLE products 
+ADD PRIMARY KEY (product_no);
+
+-- How to add an auto_incremented primary key to an existing table 
+
+CREATE TABLE vendors (name VARCHAR(255));
+
+INSERT INTO vendors (NAME)
+VALUES
+	('Microsoft'),
+	('IBM'),
+	('Apple'),
+	('Samsung');
+  
+  ALTER TABLE vendors ADD COLUMN ID SERIAL PRIMARY KEY; -- primary key add 
+  
+  -- remove primary key
+ ALTER TABLE products
+DROP CONSTRAINT products_pkey;
+
+------Foreign Key 
+ -- foreign key is a column or a group of columns in a table that reference the primary key of another table.
+ -- A table can have multiple foreign keys depending on its relationships with other tables.
+ 
+ [CONSTRAINT fk_name]
+   FOREIGN KEY(fk_columns) 
+   REFERENCES parent_table(parent_key_columns)
+   [ON DELETE delete_action]
+   [ON UPDATE update_action]
+ --  delete and update actions determine the behaviors when the primary key in the parent table is deleted and updated.
+
+-- action : SET NULL 
+ -- The SET NULL automatically sets NULL to the foreign key columns in the referencing rows of the child table
+ -- when the referenced rows in the parent table are deleted.
+   CONSTRAINT fk_customer
+      FOREIGN KEY(customer_id) 
+	  REFERENCES customers(customer_id)
+	  ON DELETE SET NULL
+    
+-- action : CASCADE  
+-- The ON DELETE CASCADE automatically deletes all the referencing rows in the child table
+-- when the referenced rows in the parent table are deleted. 
+ CONSTRAINT fk_customer
+      FOREIGN KEY(customer_id) 
+	  REFERENCES customers(customer_id)
+	  ON DELETE CASCADE
+    
+-- action : SET DEFAULT 
+-- The ON DELETE SET DEFAULT sets the default value to the foreign key column of the referencing rows in the child table 
+-- when the referenced rows from the parent table are deleted.
+ON DELETE SET DEFAULT
+
+-------- check constraint
+-- constraint that allows you to specify if values in a column must meet a specific requirement.
+
+DROP TABLE IF EXISTS employees;
+CREATE TABLE employees (
+	id SERIAL PRIMARY KEY,
+	first_name VARCHAR (50),
+	last_name VARCHAR (50),
+	birth_date DATE CHECK (birth_date > '1900-01-01'),
+	joined_date DATE CHECK (joined_date > birth_date),
+	salary numeric CHECK(salary > 0)
+);
+
+-- define postgreSQL CHECK constraints for existing tables 
+CREATE TABLE prices_list (
+	id serial PRIMARY KEY,
+	product_id INT NOT NULL,
+	price NUMERIC NOT NULL,
+	discount NUMERIC NOT NULL,
+	valid_from DATE NOT NULL,
+	valid_to DATE NOT NULL
+);
+
+ALTER TABLE prices_list 
+ADD CONSTRAINT price_discount_check 
+CHECK (
+	price > 0
+	AND discount >= 0
+	AND price > discount
+);
+
+-------- check constraint
+--  UNIQUE constraint is in place, every time you insert a new row, it checks if the value is already in the table. 
+-- It rejects the change and issues an error if the value already exists
+ 
+ CREATE TABLE person (
+	id SERIAL  PRIMARY KEY,
+	first_name VARCHAR (50),
+	last_name  VARCHAR (50),
+	email      VARCHAR (50),
+        UNIQUE(email)
+);
+ 
+ -- Adding unique constraint using a unique index 
+ -- 1st create table 
+ CREATE TABLE equipment (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR (50) NOT NULL,
+	equip_id VARCHAR (16) NOT NULL
+);
+
+-- 2nd, create a unique index based on the equip_id column.
+CREATE UNIQUE INDEX CONCURRENTLY equipment_equip_id 
+ON equipment (equip_id);
+
+
+-- 3rd, add a unique constraint to the equipment table using the equipment_equip_id index.
+ALTER TABLE equipment 
+ADD CONSTRAINT unique_equip_id 
+UNIQUE USING INDEX equipment_equip_id;
+
+
+-------- Not-Null constraint
+-- Declare NOT NULL columns 
+CREATE TABLE invoices(
+  id SERIAL PRIMARY KEY,
+  product_id INT NOT NULL,
+  qty numeric NOT NULL CHECK(qty > 0),
+  net_price numeric CHECK(net_price > 0) 
+);
+-- If you use NULL, the column will accept both NULL, and non-NULL
+-- if don't specify NULL or NOT NULL, it will accept NULL by default
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
